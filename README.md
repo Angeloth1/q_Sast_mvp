@@ -284,5 +284,20 @@ Each is thesis-sized, phrased as a question, with a starting point.
    subset that can be resolved without producing confidently wrong answers?
 
 ## License
+[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE)
 
-*(to be selected)*
+**PolyForm Noncommercial 1.0.0** — see `LICENSE`.
+
+Source-available, not open source in the OSI sense. Reading, studying,
+auditing, modifying, and contributing are all permitted. Use by educational
+institutions, public research organisations, and government bodies is
+explicitly permitted regardless of funding source. Commercial use is not.
+
+Derived work must carry the `Required Notice:` line from `LICENSE`, which
+propagates attribution to this repository downstream.
+
+For academic citation, see `CITATION.cff` (GitHub renders a "Cite this
+repository" button from it).
+
+The license is a legal instrument; the citation file is an academic
+convention. They cover different things and both apply.
