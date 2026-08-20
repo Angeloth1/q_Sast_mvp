@@ -1,5 +1,7 @@
 # q-SAST
 
+[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE)
+
 Static analysis for Python source that finds quantum-vulnerable
 cryptography and **quantifies the cost of breaking it** — using published
 quantum resource-estimation models, with every number traceable to its
@@ -284,7 +286,6 @@ Each is thesis-sized, phrased as a question, with a starting point.
    subset that can be resolved without producing confidently wrong answers?
 
 ## License
-[![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE)
 
 **PolyForm Noncommercial 1.0.0** — see `LICENSE`.
 
@@ -293,8 +294,10 @@ auditing, modifying, and contributing are all permitted. Use by educational
 institutions, public research organisations, and government bodies is
 explicitly permitted regardless of funding source. Commercial use is not.
 
-Derived work must carry the `Required Notice:` line from `LICENSE`, which
-propagates attribution to this repository downstream.
+Any copy or derived work must carry the `Required Notice:` lines from
+`LICENSE`. The license obliges those lines to travel with the software; it
+does not itself impose a citation requirement, which is why the citation
+file below exists alongside it.
 
 For academic citation, see `CITATION.cff` (GitHub renders a "Cite this
 repository" button from it).
