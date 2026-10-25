@@ -5,8 +5,11 @@ import estimates
 
 
 class QuantumScanner(ast.NodeVisitor):
-    def __init__(self):
+    def __init__(self, constants=None):
         self.flags = []
+        # Ονόματα μεταβλητών με γνωστή ακέραια τιμή, π.χ. {"KEY_SIZE": 2048}.
+        # Τα συμπληρώνει η collect_int_constants πριν ξεκινήσει το scan.
+        self.constants = constants or {}
 
     def visit_Call(self, node):
         if (
@@ -37,16 +40,60 @@ class QuantumScanner(ast.NodeVisitor):
 
         return self._get_constant_value(value_node)
 
-    @staticmethod
-    def _get_constant_value(value_node):
-        if value_node is None:
-            return None
-        if not isinstance(value_node, ast.Constant):
-            return None
-        if type(value_node.value) is not int:
-            return None
+    def _get_constant_value(self, value_node):
+        # Μεταβλητή (π.χ. key_size=KEY_SIZE): ψάχνω αν ξέρουμε την τιμή της.
+        if isinstance(value_node, ast.Name):
+            return self.constants.get(value_node.id)
 
-        return value_node.value
+        return _int_literal(value_node)
+
+
+def _int_literal(node):
+    """Ο ακέραιος, αν το node είναι γραμμένος αριθμός (π.χ. 2048). Αλλιώς None."""
+    if not isinstance(node, ast.Constant):
+        return None
+    # type(...) is int και όχι isinstance: το True είναι κι αυτό int στην Python.
+    if type(node.value) is not int:
+        return None
+    return node.value
+
+
+def collect_int_constants(tree):
+    """
+    Βρίσκει μεταβλητές που παίρνουν τιμή ΜΙΑ φορά σε όλο το αρχείο,
+    και η τιμή αυτή είναι γραμμένος ακέραιος, π.χ. KEY_SIZE = 2048.
+
+    Αν ένα όνομα παίρνει τιμή πάνω από μία φορά, δεν το κρατάμε:
+    στατικά δεν ξέρουμε ποια τιμή ισχύει τη στιγμή της κλήσης.
+    """
+    assignment_count = {}   # όνομα → πόσες φορές παίρνει τιμή
+    int_values = {}         # όνομα → ακέραια τιμή (μόνο από απλό "X = 2048")
+
+    for node in ast.walk(tree):
+        # Κάθε μορφή ανάθεσης: X = ..., X += ..., for X in ..., a, X = ...
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+            assignment_count[node.id] = assignment_count.get(node.id, 0) + 1
+        # Παράμετροι συνάρτησης: def f(X): η τιμή έρχεται από τον καλούντα.
+        elif isinstance(node, ast.arg):
+            assignment_count[node.arg] = assignment_count.get(node.arg, 0) + 1
+
+        # Η μόνη μορφή που μας δίνει τιμή: X = 2048 ή X: int = 2048
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            target, value = node.targets[0], node.value
+        elif isinstance(node, ast.AnnAssign):
+            target, value = node.target, node.value
+        else:
+            continue
+
+        number = _int_literal(value)
+        if isinstance(target, ast.Name) and number is not None:
+            int_values[target.id] = number
+
+    return {
+        name: number
+        for name, number in int_values.items()
+        if assignment_count.get(name) == 1
+    }
 
 
 def scan_file(path):
@@ -54,7 +101,7 @@ def scan_file(path):
         source = f.read()
 
     tree = ast.parse(source, filename=path)
-    scanner = QuantumScanner()
+    scanner = QuantumScanner(constants=collect_int_constants(tree))
     scanner.visit(tree)
     return scanner.flags
 
