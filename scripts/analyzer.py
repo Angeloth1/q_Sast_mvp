@@ -49,7 +49,6 @@ class QuantumScanner(ast.NodeVisitor):
 
 
 def _int_literal(node):
-    """Ο ακέραιος, αν το node είναι γραμμένος αριθμός (π.χ. 2048). Αλλιώς None."""
     if not isinstance(node, ast.Constant):
         return None
     # type(...) is int και όχι isinstance: το True είναι κι αυτό int στην Python.
@@ -59,13 +58,6 @@ def _int_literal(node):
 
 
 def collect_int_constants(tree):
-    """
-    Βρίσκει μεταβλητές που παίρνουν τιμή ΜΙΑ φορά σε όλο το αρχείο,
-    και η τιμή αυτή είναι γραμμένος ακέραιος, π.χ. KEY_SIZE = 2048.
-
-    Αν ένα όνομα παίρνει τιμή πάνω από μία φορά, δεν το κρατάμε:
-    στατικά δεν ξέρουμε ποια τιμή ισχύει τη στιγμή της κλήσης.
-    """
     assignment_count = {}   # όνομα → πόσες φορές παίρνει τιμή
     int_values = {}         # όνομα → ακέραια τιμή (μόνο από απλό "X = 2048")
 
@@ -107,7 +99,6 @@ def scan_file(path):
 
 
 def report(flags, path):
-    """Μετατρέπει δεδομένα σε κείμενο. ΕΔΩ ζει η διατύπωση."""
     print(f"Αρχείο: {path}")
     print("=" * 68)
 
